@@ -3,6 +3,11 @@ import java.util.InputMismatchException;
 
 //DoubleDice class - houses game logic
 class DoubleDice{
+    Scanner scnr = new Scanner(System.in);
+    //initialize bank amount to 100.00
+    Double total = 100.00;
+    //declare bet variable to record users desired bet amount
+    Double bet = -1.00;
   //created a method to reduce redundancy
   //takes in parameter of total to display the user's current bank amount
   public static void askUserForInput(Double total){
@@ -12,24 +17,27 @@ class DoubleDice{
     System.out.println();
     System.out.println("How much would you like to bet (Enter 0 to quit)?");
   }
+
+  public void validateInput(){
+      try {
+        bet = scnr.nextDouble();
+        if(bet < 0){
+          System.out.println("Please input a positive numeric value only");
+        }
+      } catch (InputMismatchException e) {
+          System.out.println("Please input a positive numeric value only");
+      }
+  }
+
   //main method - initiates a new game
   public void main(){
-    Scanner scnr = new Scanner(System.in);
-    //initialize bank amount to 100.00
-    Double total = 100.00;
-    //declare bet variable to record users desired bet amount
-    Double bet = -1.00;
     //solicit bet amount from user using askUserForInput method
     askUserForInput(total);
     //grab user's bet amount using the scanner, checking for InputMismatchException violations, and displaying a message if necessary
     do {
-      try {
-          bet = scnr.nextDouble();
-      } catch (InputMismatchException e) {
-          System.out.println("Please input a positive numeric value only");
-      }
-      scnr.nextLine(); // clears the buffer
-    } while (bet < 0.00);
+        validateInput();
+        scnr.nextLine(); // clears the buffer
+    } while (bet < 0.00 );
     //while the the user a.) provides a bet that isn't 0 b.) still has money and c.) does not bet more than they have, execute the game
     while(bet != 0 && total > 0 && bet <= total){
         if(total <= 0.0){
@@ -59,6 +67,7 @@ class DoubleDice{
         System.out.println();
         //update total to deduct lost bet money
         total = total - bet;
+        bet = -1.00;
       }
         //line break and ask the user again for input
         System.out.println();
@@ -66,9 +75,12 @@ class DoubleDice{
           break;
         }
         askUserForInput(total);
+        bet = -1.00;
+        do {
+          validateInput();
+          scnr.nextLine();
+        } while(bet == -1.00);
         //get new bet amount, prompting the loop to repeat if looping conditions are met
-        bet = scnr.nextDouble();
-
     }
     //if user inputs a 0 to quit, display good-bye message
     if(bet == 0){
@@ -80,10 +92,11 @@ class DoubleDice{
         System.out.println("Better luck next time!");
     } else{
         while(bet > total){
-          System.out.println("You can't bet more than you have! Try again");
-          bet = scnr.nextDouble();
+          System.out.println("You can't bet more than you have! Try again.");
+          System.out.println();
           askUserForInput(total);
-      }
+          validateInput();
+        }
     }
   }
 }
